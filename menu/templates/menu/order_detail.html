@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Details</title>
+</head>
+<body>
+
+<h2>Order Details</h2>
+
+<p><b>Name:</b> {{ order.name }}</p>
+<p><b>Phone:</b> {{ order.phone }}</p>
+<p><b>Address:</b> {{ order.address }}</p>
+
+<hr>
+
+<h3>Items:</h3>
+
+{% for item, data in items.items %}
+    <p>
+        {{ item }} ({{ data.qty }}) 
+        ₹{{ data.subtotal }}
+    </p>
+{% endfor %}
+
+<h3>Total: ₹{{ order.total }}</h3>
+
+</body>
+</html>

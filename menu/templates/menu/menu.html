@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yaseen Food's Corner</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #fff8f0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: #ff4d4d;
+            color: white;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .menu {
+            width: 70%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        .price {
+            color: green;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* CART */
+        .cart {
+            width: 30%;
+            background: #fff;
+            padding: 20px;
+            border-left: 2px solid #ddd;
+        }
+
+        .cart h2 {
+            text-align: center;
+        }
+
+        #orderList {
+            margin-top: 10px;
+        }
+
+        #total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+ 
+<input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
+<h1>🍽️ Yaseen Food's Corner🍽️</h1>
+
+<div class="container">
+
+<!-- MENU -->
+<div class="menu">
+
+{% for dish in dishes %}
+<div class="card">
+
+    {% if dish.image %}
+        <img src="{{ dish.image.url }}">
+    {% endif %}
+
+    <div class="card-content">
+        <h3>{{ dish.name }}</h3>
+        <p>{{ dish.description }}</p>
+        <p class="price">₹{{ dish.price }}</p>
+
+        <button onclick="addItem('{{ dish.name }}', {{ dish.price }})">+</button>
+<button onclick="removeItem('{{ dish.name }}')">-</button>
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+<!-- CART -->
+<div class="cart">
+    <h2>Your Cart 🛒</h2>
+
+    <div id="orderList"></div>
+
+    <p id="total">Total: ₹0</p>
+
+    <!-- 🔥 ADD HERE -->
+    <input type="text" id="name" placeholder="Your Name" style="width:100%; margin-top:10px;">
+    <input type="text" id="phone" placeholder="Phone Number" style="width:100%; margin-top:10px;">
+    <textarea id="address" placeholder="Address" style="width:100%; margin-top:10px;"></textarea>
+
+    <!-- 🔥 BUTTON BELOW -->
+    <button onclick="placeOrder()">Place Order</button>
+</div>
+
+<script>
+
+let cart = {};
+
+function addItem(name, price){
+    if(cart[name]){
+        cart[name].qty += 1;
+    } else {
+        cart[name] = {price:price, qty:1};
+    }
+    showOrder();
+}
+
+function removeItem(name){
+    if(cart[name]){
+        cart[name].qty -= 1;
+
+        if(cart[name].qty <= 0){
+            delete cart[name];
+        }
+    }
+    showOrder();  
+}
+
+function showOrder(){
+    let text = "";
+    let total = 0;
+
+    for(let item in cart){
+        let qty = cart[item].qty;
+        let price = cart[item].price;
+
+        text += item + " (" + qty + ") - ₹" + (qty * price) + "<br>";
+        total += qty * price;
+    }
+
+    document.getElementById("orderList").innerHTML = text;
+    document.getElementById("total").innerHTML = "Total: ₹" + total;
+}
+
+function placeOrder(){
+
+    let name = document.getElementById("name").value;
+    let phone = document.getElementById("phone").value;
+    let address = document.getElementById("address").value;
+
+    if(!name || !phone || !address){
+        alert("Please fill all details");
+        return;
+    }
+
+    fetch('/save-order/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            items: JSON.stringify(cart),
+            total: Object.values(cart).reduce((sum, item) => sum + item.price * item.qty, 0),
+            name: name,
+            phone: phone,
+            address: address
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        alert("🎉 Order placed successfully!");
+
+        setTimeout(function(){
+            window.location.href = "/order/" + data.order_id + "/";
+        }, 2000);
+
+    });
+}
+
+</script>
+
+</body>
+</html>
