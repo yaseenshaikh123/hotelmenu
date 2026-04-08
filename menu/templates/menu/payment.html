@@ -100,7 +100,7 @@ function payNow(){
     document.getElementById("successMsg").style.display = "block";
 
     setTimeout(function(){
-        window.location.href = "/order/{{ order.id }}/";
+        window.location.href = "{% url 'order_detail' order.id %}";
     }, 2000);
 }
 </script>

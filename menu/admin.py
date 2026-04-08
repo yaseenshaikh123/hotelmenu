@@ -1,4 +1,6 @@
 from django.contrib import admin
+from .models import Order, Dish   # ✅ add Dish
+
 from .models import Order
 
 class OrderAdmin(admin.ModelAdmin):
@@ -17,3 +19,4 @@ class OrderAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 admin.site.register(Order, OrderAdmin)
+admin.site.register(Dish)        # ✅ add this line

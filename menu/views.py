@@ -14,17 +14,17 @@ def save_order(request):
         data = json.loads(request.body)
 
         order = Order.objects.create(
-        items=data.get("items"),
-        total=data.get("total"),
-        name=data.get("name"),
-        phone=data.get("phone"),
-        address=data.get("address")
-)
+            items=data.get("items"),
+            total=data.get("total"),
+            name=data.get("name"),
+            phone=data.get("phone"),
+            address=data.get("address")
+        )
 
-    return JsonResponse({
-         "status": "success",
-         "order_id": order.id
-})
+        return JsonResponse({
+            "status": "success",
+            "order_id": order.id
+        })
     
 import json
 

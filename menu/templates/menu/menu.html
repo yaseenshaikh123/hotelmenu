@@ -1,92 +1,187 @@
 
-<<!DOCTYPE html>
+<<<!DOCTYPE html>
 <html>
 <head>
-    <title>Payment</title>
+    <title>Yaseen Food's Corner</title>
 
     <style>
         body {
+            margin: 0;
             font-family: Arial;
-            background: linear-gradient(135deg, #ff4d4d, #ff944d);
+            background: #fff8f0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: #ff4d4d;
+            color: white;
             margin: 0;
         }
 
-        .box {
-            width: 350px;
-            margin: 80px auto;
+        .container {
+            display: flex;
+        }
+
+        .menu {
+            width: 70%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
             background: white;
-            padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        h2 {
-            margin-bottom: 10px;
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
         }
 
-        .amount {
-            font-size: 24px;
+        .card-content {
+            padding: 15px;
+        }
+
+        .price {
             color: green;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            font-weight: bold;
         }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #ff4d4d;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
             cursor: pointer;
+            margin-top: 10px;
         }
 
-        button:hover {
-            background: #e60000;
-        }
-
-        .success {
-            display: none;
-            color: green;
-            margin-top: 15px;
-            font-weight: bold;
+        .cart {
+            width: 30%;
+            background: #fff;
+            padding: 20px;
+            border-left: 2px solid #ddd;
         }
     </style>
 </head>
 
 <body>
 
-<div class="box">
-    <h2>💳 UPI Payment</h2>
+<h1>🍽️ Yaseen Food's Corner</h1>
 
-    <p class="amount">₹{{ order.total }}</p>
+<div class="container">
 
-    <input type="text" placeholder="Enter UPI ID">
-    <input type="text" placeholder="Name">
+<div class="menu">
+{% for dish in dishes %}
+<div class="card">
 
-    <button onclick="payNow()">Pay Now</button>
+    {% if dish.image %}
+        <img src="{{ dish.image.url }}">
+    {% endif %}
 
-    <div class="success" id="successMsg">
-        ✅ Payment Successful!
+    <div class="card-content">
+        <h3>{{ dish.name }}</h3>
+        <p class="price">₹{{ dish.price }}</p>
+
+        <button onclick="addItem('{{ dish.name }}', {{ dish.price }})">+</button>
+        <button onclick="removeItem('{{ dish.name }}')">-</button>
     </div>
+
+</div>
+{% endfor %}
+</div>
+
+<div class="cart">
+    <h2>Your Cart 🛒</h2>
+
+    <div id="orderList"></div>
+    <p id="total">Total: ₹0</p>
+
+    <input type="text" id="name" placeholder="Your Name">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <textarea id="address" placeholder="Address"></textarea>
+
+    <button onclick="placeOrder()">Place Order</button>
+</div>
+
 </div>
 
 <script>
-function payNow(){
-    document.getElementById("successMsg").style.display = "block";
+let cart = {};
 
-    setTimeout(function(){
-        window.location.href = "/order/{{ order.id }}/";
-    }, 2000);
+function addItem(name, price){
+    if(cart[name]){
+        cart[name].qty += 1;
+    } else {
+        cart[name] = {price:price, qty:1};
+    }
+    showOrder();
+}
+
+function removeItem(name){
+    if(cart[name]){
+        cart[name].qty -= 1;
+        if(cart[name].qty <= 0){
+            delete cart[name];
+        }
+    }
+    showOrder();
+}
+
+function showOrder(){
+    let text = "";
+    let total = 0;
+
+    for(let item in cart){
+        let qty = cart[item].qty;
+        let price = cart[item].price;
+
+        text += item + " (" + qty + ") - ₹" + (qty * price) + "<br>";
+        total += qty * price;
+    }
+
+    document.getElementById("orderList").innerHTML = text;
+    document.getElementById("total").innerHTML = "Total: ₹" + total;
+}
+
+function placeOrder(){
+
+    let name = document.getElementById("name").value;
+    let phone = document.getElementById("phone").value;
+    let address = document.getElementById("address").value;
+
+    if(!name || !phone || !address){
+        alert("Please fill all details");
+        return;
+    }
+
+    fetch('/save-order/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            items: JSON.stringify(cart),
+            total: Object.values(cart).reduce((sum, item) => sum + item.price * item.qty, 0),
+            name: name,
+            phone: phone,
+            address: address
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("🎉 Order placed successfully!");
+
+        setTimeout(function(){
+            window.location.href = "/payment/" + data.order_id + "/";
+        }, 1500);
+    });
 }
 </script>
 
