@@ -44,4 +44,4 @@ def order_detail(request, id):
 
 def payment_page(request, id):
     order = Order.objects.get(id=id)
-    return render(request, 'menu/payment.html', {'order': order, 'total': order.total})
+    return render(request, 'menu/payment.html', {'order': order})
