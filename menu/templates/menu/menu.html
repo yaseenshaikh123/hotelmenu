@@ -206,8 +206,8 @@ function placeOrder(){
         alert("🎉 Order placed successfully!");
 
         setTimeout(function(){
-            window.location.href = "/order/" + data.order_id + "/";
-        }, 2000);
+        window.location.href = "/payment/" + data.order_id + "/";
+        }, 1500);
 
     });
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UPI Payment</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f2f2f2;
+        }
+
+        .box {
+            margin: 100px auto;
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>💳 UPI Payment</h2>
+
+    <p>Amount: ₹{{ total }}</p>
+    <p>UPI ID: yaseen@upi</p>
+
+    <button onclick="payNow()">Pay Now</button>
+</div>
+
+<script>
+function payNow(){
+    alert("✅ Payment Successful!");
+    window.location.href = "/order/{{ order.id }}/";
+}
+</script>
+
+</body>
+</html>

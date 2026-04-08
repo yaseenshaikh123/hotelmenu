@@ -14,17 +14,17 @@ def save_order(request):
         data = json.loads(request.body)
 
         order = Order.objects.create(
-            items=data.get("items"),
-            total=data.get("total"),
-            name=data.get("name"),
-            phone=data.get("phone"),
-            address=data.get("address")
-        )
+        items=data.get("items"),
+        total=data.get("total"),
+        name=data.get("name"),
+        phone=data.get("phone"),
+        address=data.get("address")
+)
 
-        return JsonResponse({
-            "status": "success",
-            "order_id": order.id   # 👈 VERY IMPORTANT
-        })
+    return JsonResponse({
+         "status": "success",
+         "order_id": order.id
+})
     
 import json
 
@@ -41,3 +41,7 @@ def order_detail(request, id):
         "order": order,
         "items": items
     })
+
+def payment_page(request, id):
+    order = Order.objects.get(id=id)
+    return render(request, 'menu/payment.html', {'order': order, 'total': order.total})

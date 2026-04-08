@@ -6,3 +6,5 @@ urlpatterns = [
     path('save-order/', views.save_order, name='save_order'),
     path('order/<int:id>/', views.order_detail, name='order_detail'),
 ]
+
+path('payment/<int:id>/', views.payment_page, name='payment'),
