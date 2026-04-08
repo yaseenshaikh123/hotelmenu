@@ -8,4 +8,5 @@ urlpatterns = [
 
     # ✅ ADD THIS
     path('payment/<int:id>/', views.payment_page, name='payment'),
+    path('payment/<int:id>/', views.payment, name='payment'),
 ]

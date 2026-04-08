@@ -45,3 +45,10 @@ def order_detail(request, id):
 def payment_page(request, id):
     order = Order.objects.get(id=id)
     return render(request, 'menu/payment.html', {'order': order})
+
+def payment(request, id):
+    from django.shortcuts import get_object_or_404, render
+    from .models import Order
+
+    order = get_object_or_404(Order, id=id)
+    return render(request, 'menu/payment.html', {'order': order})
