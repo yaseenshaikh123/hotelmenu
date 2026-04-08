@@ -1,30 +1,19 @@
 from django.contrib import admin
-from .models import Dish, Order
-import json
-from django.utils.html import format_html
-
-admin.site.register(Dish)
+from .models import Order
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'get_items', 'total', 'view_order')
+    list_display = ('id', 'name', 'phone', 'total')
 
-    def get_items(self, obj):
-        items_dict = json.loads(obj.items)
+    def changelist_view(self, request, extra_context=None):
+        from django.db.models import Sum
 
-        text = ""
-        for item, data in items_dict.items():
-            text += f"{item} ({data['qty']}), "
+        total_sales = Order.objects.aggregate(Sum('total'))['total__sum'] or 0
+        total_orders = Order.objects.count()
 
-        return text
+        extra_context = extra_context or {}
+        extra_context['total_sales'] = total_sales
+        extra_context['total_orders'] = total_orders
 
-    get_items.short_description = 'Items'
-
-    def view_order(self, obj):
-        return format_html(
-            '<a href="/order/{}/" target="_blank">View</a>',
-            obj.id
-        )
-
-    view_order.short_description = 'View Order'
+        return super().changelist_view(request, extra_context=extra_context)
 
 admin.site.register(Order, OrderAdmin)
