@@ -10,6 +10,23 @@
             font-family: Arial;
             background: #fff8f0;
         }
+        .form-group {
+    margin-bottom: 10px;
+    }
+
+       .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 3px;
+        }
+
+       .form-group input,
+       .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        }
 
         h1 {
             text-align: center;
@@ -105,10 +122,20 @@
     <div id="orderList"></div>
     <p id="total">Total: ₹0</p>
 
-    <input type="text" id="name" placeholder="Your Name">
-    <input type="text" id="phone" placeholder="Phone Number">
-    <textarea id="address" placeholder="Address"></textarea>
+    <div class="form-group">
+    <label>Name:</label>
+    <input type="text" id="name">
+</div>
 
+<div class="form-group">
+    <label>Phone Number:</label>
+    <input type="text" id="phone">
+</div>
+
+<div class="form-group">
+    <label>Address:</label>
+    <textarea id="address"></textarea>
+</div>
     <button onclick="placeOrder()">Place Order</button>
 </div>
 
